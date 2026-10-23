@@ -1,152 +1,204 @@
-# Maxgus — World Clock
+<div align="center">
 
-A macOS desktop widget for keeping an eye on the time in cities around the world. Built with SwiftUI and WidgetKit in the same visual family as the Calendar and Weather widgets that inspired it: dark glass, SF Pro, oversized numerals, almost no chrome.
+<img src="docs/screenshots/hero.png" alt="Maxgus World Clock widgets: Focus, Duo, Trio and Grid on a dark desktop" width="100%">
 
-![Maxgus World Clock app](design/app-swift.png)
+# Maxgus World Clock
 
-![World Clock widgets](design/widgets-swift.png)
+### Every timezone, at a glance.
 
-*Actual SwiftUI renders at 158 / 338 pt, not mockups.*
+A quiet glass world clock for the macOS desktop.<br>
+City first, time large, context close by — built to sit beside Calendar and Weather without competing with them.
 
-## Install the prebuilt app
+![macOS 14+](https://img.shields.io/badge/macOS-14%2B-0b1930?style=for-the-badge&logo=apple&logoColor=white)
+![Swift 5](https://img.shields.io/badge/Swift-5-F05138?style=for-the-badge&logo=swift&logoColor=white)
+![SwiftUI + WidgetKit](https://img.shields.io/badge/SwiftUI-WidgetKit-2c5fb8?style=for-the-badge)
+![Universal](https://img.shields.io/badge/Apple%20silicon%20%2B%20Intel-universal-5b3c96?style=for-the-badge)
 
-`dist/Maxgus World Clock.dmg` is a ready-to-install universal build (Apple silicon and Intel).
+[Highlights](#-highlights) · [The widgets](#-the-widgets) · [Install](#-install) · [Choosing cities](#-choosing-cities) · [How it works](#-how-it-works) · [Design](#-design) · [Build & test](#-build--test)
 
-1. Open the DMG.
-2. Drag **Maxgus World Clock** onto **Applications**.
-3. Open the app once from Applications.
-4. Click the desktop, choose **Edit Widgets…**, search for **Maxgus World Clock**, and drag a size onto the desktop.
-5. To choose cities: right-click the placed widget → **Edit Widget**.
+</div>
 
-Widget sizes:
+---
 
-| Size | Layout | Cities |
-| --- | --- | --- |
-| 2×2 | Focus, Duo, or Compact List | 1 to 3 cities |
-| 4×2 | Trio | Up to three cities |
-| 4×4 | Grid | Up to four cities |
+## ✦ Highlights
 
-The build is ad-hoc signed. If macOS blocks it on another Mac, right-click the app → **Open**, or remove the download quarantine flag:
+- **Three sizes, five layouts.** A big single clock, two or three cities on a 2×2, three columns on a 4×2, a four-city grid on a 4×4.
+- **Context, not clutter.** Every city shows *Today*, *Tomorrow* or *Yesterday* relative to your Mac, its UTC offset (half-hour zones included), and a sun or moon for day and night.
+- **Minute-perfect.** Timelines are aligned to the minute, so the time, the day label and the offset all flip exactly when they should.
+- **Follows your Mac.** 12- or 24-hour time comes from your system setting. In 12-hour mode, AM/PM becomes a small raised marker instead of competing with the numerals.
+- **Home marker.** A tiny location arrow marks the city in your current time zone.
+- **Names that fit together.** When a city name is too long, every name in that widget steps down to the same smaller size rather than each column shrinking on its own.
+- **Edit Widget shows only what matters.** A Focus widget asks for one city; a 4×4 asks for four.
+- **No developer account needed.** The ad-hoc build is fully configurable — see [why that took some care](#-how-it-works).
+
+## ◐ The widgets
+
+| Size | Layouts | Cities | Starts with |
+| --- | --- | --- | --- |
+| **2×2** · 158 × 158 pt | **Focus** | 1 | Lisbon |
+| | **Duo** | 2 | Lisbon, Tokyo |
+| | **Compact List** | 3 | San Francisco, London, Tokyo |
+| **4×2** · 338 × 158 pt | **Trio** | 3 | New York, Tokyo, Sydney |
+| **4×4** · 338 × 338 pt | **Grid** | 4 | San Francisco, London, Dubai, Tokyo |
+
+<p align="center">
+  <img src="docs/screenshots/small-styles.png" alt="The three 2×2 layouts: Focus, Duo and Compact List" width="80%">
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/twelve-hour.png" alt="Focus and Trio in 12-hour mode, with raised AM and PM markers" width="80%">
+  <br><sub>12-hour mode, with the home marker on Lisbon.</sub>
+</p>
+
+## ⇣ Install
+
+You'll need **macOS 14 Sonoma or later** and **Xcode 16 or later** to build.
+
+```sh
+git clone https://github.com/alejandro-llanes/maxgus-world-clock.git
+cd maxgus-world-clock
+./Scripts/build-dmg.sh
+```
+
+Then:
+
+1. Open `dist/Maxgus World Clock.dmg` and drag **Maxgus World Clock** onto **Applications**.
+2. Open the app once from Applications.
+3. Click the desktop, choose **Edit Widgets…**, search for **Maxgus World Clock**, and drag a size onto the desktop.
+4. Right-click the placed widget and choose **Edit Widget** to pick its cities.
+
+<details>
+<summary><b>Copying the app to another Mac?</b></summary>
+
+<br>
+
+The build is ad-hoc signed and not notarized. If macOS refuses to open it, right-click the app and choose **Open**, or clear the quarantine flag:
 
 ```sh
 xattr -dr com.apple.quarantine "/Applications/Maxgus World Clock.app"
 ```
 
-If the widget doesn't show up in the gallery, launch the app once, then check registration:
+To sign with a Developer ID and notarize instead:
+
+```sh
+CODESIGN_IDENTITY="Developer ID Application: Your Name (TEAMID)" \
+NOTARY_PROFILE="your-notarytool-profile" \
+  ./Scripts/build-dmg.sh
+```
+
+</details>
+
+## ⌖ Choosing cities
+
+Right-click a widget → **Edit Widget**. Each placement keeps its own cities, and any slot you leave empty uses the defaults above, so a freshly placed widget already looks composed.
+
+The picker offers 45 cities, grouped by region:
+
+| Region | Cities |
+| --- | --- |
+| **Africa** | Cairo, Cape Town, Lagos, Nairobi |
+| **Americas** | Bogotá, Buenos Aires, Chicago, Denver, Lima, Los Angeles, Mexico City, Miami, New York, Rio de Janeiro, San Francisco, Santiago, São Paulo, Toronto, Vancouver |
+| **Asia & Pacific** | Auckland, Bangkok, Delhi, Dubai, Honolulu, Hong Kong, Jakarta, Manila, Mumbai, Seoul, Shanghai, Singapore, Sydney, Tokyo |
+| **Europe** | Amsterdam, Berlin, Istanbul, Lisbon, London, Madrid, Moscow, Paris, Reykjavík, Rome, Stockholm, Zürich |
+
+To add a city, add one line to [`CityCatalog.swift`](Shared/CityCatalog.swift).
+
+## ⚙ How it works
+
+- **Minute-aligned timelines.** The `AppIntentTimelineProvider` emits 61 entries starting on the current minute and asks for a new timeline when they run out, about once an hour.
+- **One model for every tile.** [`CityTime`](Shared/CityTime.swift) turns a city and a moment into everything a tile shows: the time, AM/PM, date, relative day, UTC offset, day or night, and whether it's your home zone.
+- **One design system, two targets.** The widget and the host app render the same SwiftUI views from [`WidgetViews.swift`](Shared/WidgetViews.swift), so the app's live previews are the real widgets.
+- **Settings are plain strings — on purpose.** macOS decodes custom App Intents types (entities and enums) through `linkd`, and `linkd` rejects apps without a Team ID. In an ad-hoc build, those values arrive empty and every widget silently falls back to its defaults. Storing city names and the style as plain strings keeps decoding inside the widget, so Edit Widget works without a developer account. The trade-off is a menu of built-in cities rather than a searchable list.
+- **Built by Xcode, end to end.** [`build-dmg.sh`](Scripts/build-dmg.sh) runs `xcodebuild`, so the App Intents metadata behind Edit Widget is always generated from the code. It also unregisters the build-folder copy, so macOS only ever runs the widget from `/Applications`.
+
+## ◇ Design
+
+The look started as an interactive design study in [`design/index.html`](design/index.html) — open it in a browser to flip between wallpapers and 12/24-hour time. The SwiftUI views carry its tokens over directly:
+
+| Token | Value |
+| --- | --- |
+| **Type** | SF Pro, light numerals with tight tracking; tabular figures so minutes never shift the layout |
+| **Ink** | `#F6F8FC` primary · 62% for cities and dates · 40% for offsets and meta |
+| **Hairlines** | 10% white, used for every divider |
+| **Corners** | Continuous, 13% of the tile's short side; 7.5% on 4×4 |
+| **Glass** | Layered dark gradients with a soft blue bloom, over the system material |
+
+<p align="center">
+  <img src="design/preview.png" alt="The original design study" width="80%">
+</p>
+
+<details>
+<summary><b>The host app</b></summary>
+
+<br>
+
+Opening the app shows live previews of every size and the steps to put a widget on your desktop.
+
+<img src="docs/screenshots/app.png" alt="The Maxgus World Clock app with live widget previews" width="100%">
+
+</details>
+
+## ⌘ Build & test
+
+| Command | What it does |
+| --- | --- |
+| `./Scripts/run-tests.sh` | Runs the `WorldClockTests` unit tests (same as ⌘U in Xcode) |
+| `./Scripts/build-dmg.sh` | Builds the universal Release app and `dist/Maxgus World Clock.dmg` |
+
+To work in Xcode, open `MaxgusWorldClock.xcodeproj`, choose the **MaxgusWorldClock** scheme and press ⌘R. With no team selected, Xcode signs to run locally.
+
+The tests compile the shared model code without a host app, so running them never launches or registers the widget.
+
+<details>
+<summary><b>Project structure</b></summary>
+
+<br>
+
+```
+MaxgusWorldClock.xcodeproj
+MaxgusWorldClock/          Host app: onboarding and live widget previews
+WorldClockWidget/          WidgetKit extension and Edit Widget configuration
+Shared/
+  CityEntity.swift         City model and small-widget styles
+  CityCatalog.swift        The 45 cities, per-size defaults, fallback resolution
+  CityTime.swift           Time, date, offset, home marker and relative-day logic
+  WidgetViews.swift        Glass tile and all five widget layouts
+Scripts/
+  build-dmg.sh             Universal build, DMG packaging, optional notarization
+  run-tests.sh             Runs the WorldClockTests target
+  INSTALL.txt              Installed as "Read Me.txt" in the DMG
+Tests/
+  WorldClockTests.swift    Catalog, offsets, day boundaries, slot resolution
+design/                    Interactive design study and preview
+docs/screenshots/          Renders used in this README
+```
+
+</details>
+
+<details>
+<summary><b>Troubleshooting</b></summary>
+
+<br>
+
+**The widget isn't in the gallery.** Open the app once, then check that macOS registered the extension:
 
 ```sh
 pluginkit -m -v | grep maxgus
 ```
 
-If it is missing, register it manually and reopen the app:
+It should list `com.maxgus.worldclock.widget` from `/Applications`. If it's missing, register it and reopen the app:
 
 ```sh
 pluginkit -a "/Applications/Maxgus World Clock.app/Contents/PlugIns/WorldClockWidget.appex"
 open -a "Maxgus World Clock"
 ```
 
-The same instructions are included as `Read Me.txt` inside the DMG.
+**A widget ignores the cities you picked.** Make sure only one copy is registered — the `pluginkit` command above should print a single line. Copies left in build folders can be removed with `pluginkit -r <path to WorldClockWidget.appex>`.
 
-## Requirements
+</details>
 
-- macOS 14 Sonoma or later.
-- To install the prebuilt DMG: no Xcode required.
-- To build from source, run the tests, or package a DMG: Xcode 16 or later.
+---
 
-## Build and test from the command line
-
-To run the unit tests (the same as ⌘U in Xcode):
-
-```sh
-./Scripts/run-tests.sh
-```
-
-To build the universal installer app and DMG:
-
-```sh
-./Scripts/build-dmg.sh
-```
-
-The script:
-
-- builds the Release configuration with `xcodebuild` as a universal binary (`arm64` and `x86_64`). Xcode compiles the app icon and generates the App Intents metadata that the widget's **Edit Widget** panel reads;
-- signs to run locally (ad-hoc) by default;
-- emits both `dist/Maxgus World Clock.app` and `dist/Maxgus World Clock.dmg`, plus a SHA-256 checksum.
-
-No app group, team, or provisioning profile is needed: the app and the widget never share data at runtime.
-
-Signing is ad-hoc by default. To sign and notarize with a Developer ID:
-
-```sh
-CODESIGN_IDENTITY="Developer ID Application: Your Name (TEAMID)" \
-NOTARY_PROFILE="AC_PASSWORD" \
-  ./Scripts/build-dmg.sh
-```
-
-## Build and run in Xcode
-
-1. Open `MaxgusWorldClock.xcodeproj`.
-2. Select the **MaxgusWorldClock** target → **Signing & Capabilities** → choose your Team.
-   Do the same for the **WorldClockWidget** target. If you don't have a developer account, choose **Sign to Run Locally**.
-3. Choose the **MaxgusWorldClock** scheme and press **Run** (⌘R).
-4. Click the desktop, choose **Edit Widgets…**, search for **Maxgus World Clock**, and drag a size onto the desktop.
-5. To choose cities after placing a widget: right-click it → **Edit Widget**.
-
-## Configuration
-
-Each widget placement keeps its own city configuration:
-
-| Family | Cities used |
-| --- | --- |
-| Small (2×2) Focus | First city only |
-| Small (2×2) Duo | First two cities |
-| Small (2×2) Compact List | First three cities |
-| Medium (4×2) | First three cities |
-| Large (4×4) | All four cities |
-
-**Edit Widget** lists only the settings the placed size and style use: a 2×2 Focus widget shows the style and one city, a 4×4 shows four cities. Empty slots fall back to a curated default set per size, so a newly placed widget already looks composed.
-
-Cities come from a built-in list of 45 in `CityCatalog`, and Edit Widget stores each pick as the city's ID string. They are plain strings rather than an App Intents entity or enum on purpose: macOS decodes custom App Intents types through `linkd`, which rejects apps without a Team ID. With an ad-hoc build, entity and enum city choices silently arrive empty and every widget falls back to its defaults. Strings decode inside the widget, so city choices work without a developer account. The small-widget style is stored the same way. To add a city, add it to `CityCatalog`.
-
-## How it works
-
-- **Minute-perfect timelines.** `AppIntentTimelineProvider` emits 61 entries aligned to the minute and reloads at the end of the hour. The clock, day label, and UTC offset flip together exactly when they should.
-- **Context, not clutter.** `CityTime` derives the localized time, date, "Tomorrow"/"Yesterday", UTC offset, and day/night state for each city. Day changes and half-hour offsets are handled.
-- **System-aware formatting.** The widget follows the Mac's 12/24-hour preference. In 12-hour mode, AM/PM becomes a small raised marker instead of competing with the numerals.
-- **Multiple small-widget styles.** People can pick between **Focus** (1 city), **Duo** (2 cities), and **Compact List** (3 cities) right from the widget configuration intent.
-- **Names that fit together.** When a city name is too long for its slot, every name in that widget steps down to the same smaller size rather than each column shrinking on its own; past that, names truncate.
-- **Live previews in the host app.** The app shows all sizes (2×2, 4×2, and 4×4) with each size's default cities. Choosing cities happens per widget, in **Edit Widget**.
-- **One design system, two targets.** The widget and the host app share the same SwiftUI views (`FocusClockView`, `DuoClockView`, `CompactListClockView`, `TrioClockView`, `GridClockView`) and glass background.
-- **Home city badge.** A subtle location marker marks the city matching your current local time zone.
-- **Resilient window placement.** If macOS restores the host window from a display that is no longer attached, the app centers it on the main screen instead of opening off-screen.
-
-## Project structure
-
-```
-MaxgusWorldClock.xcodeproj
-MaxgusWorldClock/          Host app: onboarding and live widget previews
-WorldClockWidget/          WidgetKit extension and configuration intent
-Shared/
-  CityEntity.swift         City model and SmallWidgetStyle
-  CityCatalog.swift        City catalog, per-size defaults, fallback resolution
-  CityTime.swift           Time, date, offset, home badge, and day-relation logic
-  WidgetViews.swift        Glass tile, home badge, and all five widget layouts
-Scripts/
-  build-dmg.sh             xcodebuild universal build + DMG packaging + notarization support
-  run-tests.sh             Runs the WorldClockTests target with xcodebuild
-  INSTALL.txt              Text installed as Read Me.txt in the DMG
-Tests/
-  WorldClockTests.swift    WorldClockTests target: catalog, offsets, day boundaries, deduplication
-design/                    Design study (HTML) and rendered previews
-dist/                      Built app, DMG, and checksum (generated)
-```
-
-## Verification
-
-Run the test suite:
-
-```sh
-./Scripts/run-tests.sh
-```
-
-The tests compile the shared model code directly (no host app), so running them never launches or registers the widget. After installing, `pluginkit -m -v | grep maxgus` should list `com.maxgus.worldclock.widget` from `/Applications`.
+<div align="center">
+<sub>Made for the macOS desktop · Glass · SF Pro · WidgetKit</sub>
+</div>
