@@ -1,0 +1,58 @@
+Maxgus World Clock 1.0
+======================
+
+A world clock for your macOS desktop. Requires macOS 14 or later.
+
+
+Install
+-------
+
+1. Drag "Maxgus World Clock" onto the Applications folder in this window.
+2. Open Maxgus World Clock once from Applications.
+3. Click the desktop, then choose "Edit Widgets…".
+4. Search for "Maxgus World Clock" and drag a widget onto the desktop.
+5. Right-click the placed widget and choose "Edit Widget" to pick cities.
+
+Widget sizes:
+  2x2  Focus  — the main city
+  4x2  Trio   — up to three cities
+  4x4  Grid   — up to four cities
+
+
+If macOS blocks the app
+-----------------------
+
+This build is ad-hoc signed and not notarized. If macOS says it cannot
+be opened, right-click the app and choose Open, then confirm.
+
+You can also remove the download quarantine flag:
+
+  xattr -dr com.apple.quarantine "/Applications/Maxgus World Clock.app"
+
+
+If the widget does not appear
+-----------------------------
+
+Open the app once, then check that macOS registered the extension:
+
+  pluginkit -m -v | grep maxgus
+
+You should see com.maxgus.worldclock.widget.
+
+If it is missing, register it manually and reopen the app:
+
+  pluginkit -a "/Applications/Maxgus World Clock.app/Contents/PlugIns/WorldClockWidget.appex"
+  open -a "Maxgus World Clock"
+
+In rare cases, logging out and back in refreshes the widget gallery.
+
+
+Uninstall
+---------
+
+Quit the app, remove it from Applications, and optionally remove the
+widget from the desktop. Then run:
+
+  pluginkit -r "/Applications/Maxgus World Clock.app/Contents/PlugIns/WorldClockWidget.appex"
+
+The app stores no personal data.

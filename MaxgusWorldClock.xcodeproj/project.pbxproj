@@ -1,0 +1,519 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AB05C58CB74C6D8435C09B7C /* MaxgusWorldClockApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7102D3E65F1B6FCF32F3E1D0 /* MaxgusWorldClockApp.swift */; };
+		E5960B866322E765051D579E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 361ACD2005CA4FF21401D080 /* ContentView.swift */; };
+		C72CA57AB1EA7FE0E75D637E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3CB86A5E01BA1A6D5180DD0D /* Assets.xcassets */; };
+		48B101627A31ED83CAE40D0D /* CityEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBEBB65E931091E5BCBF3DBF /* CityEntity.swift */; };
+		CF5AF5483857CFD8BE4702CD /* CityCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC337AA3690147BEFD9EE72C /* CityCatalog.swift */; };
+		F73B62F27B004C8CD5F629B7 /* CityTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65DD55FD4C640EF9B3209816 /* CityTime.swift */; };
+		E3E7BFFA87FA0DD62A318D65 /* WidgetViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EEC652598D358730009C56E /* WidgetViews.swift */; };
+		DBA79C71347B75EB576A7B67 /* WorldClockWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 9B0FB88948EB23260DEE2D4E /* WorldClockWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		968D49A19D3A147A011DE940 /* WorldClockWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7774CE9BDA9D92C3944A816D /* WorldClockWidget.swift */; };
+		3D926F471B18F069C9B2AAB1 /* CityEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBEBB65E931091E5BCBF3DBF /* CityEntity.swift */; };
+		878A2C13AC63338FFE827EAE /* CityCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC337AA3690147BEFD9EE72C /* CityCatalog.swift */; };
+		C0EFB231F06C45D5E96BBA12 /* CityTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65DD55FD4C640EF9B3209816 /* CityTime.swift */; };
+		391AD543427053CBCE8016E6 /* WidgetViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EEC652598D358730009C56E /* WidgetViews.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		6D50F8639F69640FDA376276 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A16F12113AC47E1F41344493 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0430385E3BB9F594FA418BE5;
+			remoteInfo = WorldClockWidget;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		994CC940B203FAF8B51E31D2 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				DBA79C71347B75EB576A7B67 /* WorldClockWidget.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		7102D3E65F1B6FCF32F3E1D0 /* MaxgusWorldClockApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaxgusWorldClockApp.swift; sourceTree = "<group>"; };
+		361ACD2005CA4FF21401D080 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		3CB86A5E01BA1A6D5180DD0D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		CBEBB65E931091E5BCBF3DBF /* CityEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityEntity.swift; sourceTree = "<group>"; };
+		EC337AA3690147BEFD9EE72C /* CityCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityCatalog.swift; sourceTree = "<group>"; };
+		65DD55FD4C640EF9B3209816 /* CityTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityTime.swift; sourceTree = "<group>"; };
+		9EEC652598D358730009C56E /* WidgetViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetViews.swift; sourceTree = "<group>"; };
+		7774CE9BDA9D92C3944A816D /* WorldClockWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorldClockWidget.swift; sourceTree = "<group>"; };
+		97ECA6B4156CC85EDCA23E61 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A17C0DE100000000000000A1 /* MaxgusWorldClock.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MaxgusWorldClock.entitlements; sourceTree = "<group>"; };
+		A17C0DE100000000000000A2 /* WorldClockWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WorldClockWidget.entitlements; sourceTree = "<group>"; };
+		6A9D06CD9F147E3B6551C098 /* MaxgusWorldClock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MaxgusWorldClock.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9B0FB88948EB23260DEE2D4E /* WorldClockWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WorldClockWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AF8A0C9A4AAE02D8C65D9C9E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		865A8B65E9E1CF7F181713FF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D6B977042D1357BA2E7BE5D9 = {
+			isa = PBXGroup;
+			children = (
+				8F3791C884EA213180C0A8FB /* MaxgusWorldClock */,
+				DAA086CC6BA2EE8789DFEC06 /* Shared */,
+				5BF8730692FFBA8A56116A3D /* WorldClockWidget */,
+				61FA9A9EE69590788B2D02CC /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		61FA9A9EE69590788B2D02CC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6A9D06CD9F147E3B6551C098 /* MaxgusWorldClock.app */,
+				9B0FB88948EB23260DEE2D4E /* WorldClockWidget.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8F3791C884EA213180C0A8FB /* MaxgusWorldClock */ = {
+			isa = PBXGroup;
+			children = (
+				7102D3E65F1B6FCF32F3E1D0 /* MaxgusWorldClockApp.swift */,
+				361ACD2005CA4FF21401D080 /* ContentView.swift */,
+				3CB86A5E01BA1A6D5180DD0D /* Assets.xcassets */,
+				A17C0DE100000000000000A1 /* MaxgusWorldClock.entitlements */,
+			);
+			path = MaxgusWorldClock;
+			sourceTree = "<group>";
+		};
+		DAA086CC6BA2EE8789DFEC06 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				CBEBB65E931091E5BCBF3DBF /* CityEntity.swift */,
+				EC337AA3690147BEFD9EE72C /* CityCatalog.swift */,
+				65DD55FD4C640EF9B3209816 /* CityTime.swift */,
+				9EEC652598D358730009C56E /* WidgetViews.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		5BF8730692FFBA8A56116A3D /* WorldClockWidget */ = {
+			isa = PBXGroup;
+			children = (
+				7774CE9BDA9D92C3944A816D /* WorldClockWidget.swift */,
+				97ECA6B4156CC85EDCA23E61 /* Info.plist */,
+				A17C0DE100000000000000A2 /* WorldClockWidget.entitlements */,
+			);
+			path = WorldClockWidget;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		72388979065D8A6FAE126477 /* MaxgusWorldClock */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FCA4D4BE18A74327A90D0EDA /* Build configuration list for PBXNativeTarget "MaxgusWorldClock" */;
+			buildPhases = (
+				1E018389A6D006407AA08DE1 /* Sources */,
+				AF8A0C9A4AAE02D8C65D9C9E /* Frameworks */,
+				C7ABAF71AA93C3300C3FE940 /* Resources */,
+				994CC940B203FAF8B51E31D2 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1F5176C41FF19886EBC850C5 /* PBXTargetDependency */,
+			);
+			name = MaxgusWorldClock;
+			productName = MaxgusWorldClock;
+			productReference = 6A9D06CD9F147E3B6551C098 /* MaxgusWorldClock.app */;
+			productType = "com.apple.product-type.application";
+		};
+		0430385E3BB9F594FA418BE5 /* WorldClockWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 944A9FD2BA37F8F4206F8E64 /* Build configuration list for PBXNativeTarget "WorldClockWidget" */;
+			buildPhases = (
+				9AB99AE494F68227A2FDC525 /* Sources */,
+				865A8B65E9E1CF7F181713FF /* Frameworks */,
+				01C0B37E1D1A18D35CB70ADD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WorldClockWidget;
+			productName = WorldClockWidget;
+			productReference = 9B0FB88948EB23260DEE2D4E /* WorldClockWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A16F12113AC47E1F41344493 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					72388979065D8A6FAE126477 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					0430385E3BB9F594FA418BE5 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = AA72894397F82D47520058B6 /* Build configuration list for PBXProject "MaxgusWorldClock" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = D6B977042D1357BA2E7BE5D9;
+			productRefGroup = 61FA9A9EE69590788B2D02CC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				72388979065D8A6FAE126477 /* MaxgusWorldClock */,
+				0430385E3BB9F594FA418BE5 /* WorldClockWidget */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C7ABAF71AA93C3300C3FE940 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C72CA57AB1EA7FE0E75D637E /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		01C0B37E1D1A18D35CB70ADD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1E018389A6D006407AA08DE1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AB05C58CB74C6D8435C09B7C /* MaxgusWorldClockApp.swift in Sources */,
+				E5960B866322E765051D579E /* ContentView.swift in Sources */,
+				48B101627A31ED83CAE40D0D /* CityEntity.swift in Sources */,
+				CF5AF5483857CFD8BE4702CD /* CityCatalog.swift in Sources */,
+				F73B62F27B004C8CD5F629B7 /* CityTime.swift in Sources */,
+				E3E7BFFA87FA0DD62A318D65 /* WidgetViews.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9AB99AE494F68227A2FDC525 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				968D49A19D3A147A011DE940 /* WorldClockWidget.swift in Sources */,
+				3D926F471B18F069C9B2AAB1 /* CityEntity.swift in Sources */,
+				878A2C13AC63338FFE827EAE /* CityCatalog.swift in Sources */,
+				C0EFB231F06C45D5E96BBA12 /* CityTime.swift in Sources */,
+				391AD543427053CBCE8016E6 /* WidgetViews.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1F5176C41FF19886EBC850C5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0430385E3BB9F594FA418BE5 /* WorldClockWidget */;
+			targetProxy = 6D50F8639F69640FDA376276 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		05F5F431A5D08B3089C197C4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		C7ECFC54996F0D1F3A81DB39 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		23567DC0325D2B609C68AAE0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MaxgusWorldClock/MaxgusWorldClock.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Maxgus World Clock";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.maxgus.worldclock;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = minimal;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		97210B9BF2679A89C5BBD6DE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MaxgusWorldClock/MaxgusWorldClock.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Maxgus World Clock";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.maxgus.worldclock;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = minimal;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		73D9003386EAC1B88D566D26 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = WorldClockWidget/WorldClockWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = WorldClockWidget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.maxgus.worldclock.widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = minimal;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		379BD5A9E581B532A3D42287 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = WorldClockWidget/WorldClockWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = WorldClockWidget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.maxgus.worldclock.widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = minimal;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AA72894397F82D47520058B6 /* Build configuration list for PBXProject "MaxgusWorldClock" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				05F5F431A5D08B3089C197C4 /* Debug */,
+				C7ECFC54996F0D1F3A81DB39 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FCA4D4BE18A74327A90D0EDA /* Build configuration list for PBXNativeTarget "MaxgusWorldClock" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				23567DC0325D2B609C68AAE0 /* Debug */,
+				97210B9BF2679A89C5BBD6DE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		944A9FD2BA37F8F4206F8E64 /* Build configuration list for PBXNativeTarget "WorldClockWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				73D9003386EAC1B88D566D26 /* Debug */,
+				379BD5A9E581B532A3D42287 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A16F12113AC47E1F41344493 /* Project object */;
+}
