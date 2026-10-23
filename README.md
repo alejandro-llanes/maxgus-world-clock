@@ -51,11 +51,11 @@ The same instructions are included as `Read Me.txt` inside the DMG.
 
 - macOS 14 Sonoma or later.
 - To install the prebuilt DMG: no Xcode required.
-- To build from source: Xcode 15 or later. The standalone packaging script needs only the Command Line Tools (`swiftc`, `lipo`, `codesign`, `iconutil`, `hdiutil`).
+- To build from source, run the tests, or package a DMG: Xcode 16 or later.
 
-## Build and test without Xcode
+## Build and test from the command line
 
-To run the automated test suite:
+To run the unit tests (the same as ⌘U in Xcode):
 
 ```sh
 ./Scripts/run-tests.sh
@@ -69,10 +69,11 @@ To build the universal installer app and DMG:
 
 The script:
 
-- compiles the host app and widget extension with `swiftc` for `arm64` and `x86_64`, then combines them with `lipo`;
-- builds the embedded `WorldClockWidget.appex` with the `NSExtensionMain` entry point WidgetKit expects;
-- creates the app icon, `Info.plist` files, sandbox entitlements, and signatures;
+- builds the Release configuration with `xcodebuild` as a universal binary (`arm64` and `x86_64`). Xcode compiles the app icon and generates the App Intents metadata that the widget's **Edit Widget** panel reads;
+- signs to run locally (ad-hoc) by default;
 - emits both `dist/Maxgus World Clock.app` and `dist/Maxgus World Clock.dmg`, plus a SHA-256 checksum.
+
+No app group, team, or provisioning profile is needed: the app and the widget never share data at runtime.
 
 Signing is ad-hoc by default. To sign and notarize with a Developer ID:
 
@@ -103,7 +104,9 @@ Each widget placement keeps its own city configuration:
 | Medium (4×2) | First three cities |
 | Large (4×4) | All four cities |
 
-Empty slots fall back to a curated default set (or the user's custom default roster configured inside the host app), so a newly placed widget already looks composed. Search works across the built-in catalog of ~40 cities and accepts any IANA time zone identifier (e.g. `America/Bogota`, `Europe/Warsaw`).
+**Edit Widget** lists only the settings the placed size and style use: a 2×2 Focus widget shows the style and one city, a 4×4 shows four cities. Empty slots fall back to a curated default set per size, so a newly placed widget already looks composed.
+
+Cities come from a built-in list of 45 in `CityCatalog`, and Edit Widget stores each pick as the city's ID string. They are plain strings rather than an App Intents entity or enum on purpose: macOS decodes custom App Intents types through `linkd`, which rejects apps without a Team ID. With an ad-hoc build, entity and enum city choices silently arrive empty and every widget falls back to its defaults. Strings decode inside the widget, so city choices work without a developer account. The small-widget style is stored the same way. To add a city, add it to `CityCatalog`.
 
 ## How it works
 
@@ -111,7 +114,8 @@ Empty slots fall back to a curated default set (or the user's custom default ros
 - **Context, not clutter.** `CityTime` derives the localized time, date, "Tomorrow"/"Yesterday", UTC offset, and day/night state for each city. Day changes and half-hour offsets are handled.
 - **System-aware formatting.** The widget follows the Mac's 12/24-hour preference. In 12-hour mode, AM/PM becomes a small raised marker instead of competing with the numerals.
 - **Multiple small-widget styles.** People can pick between **Focus** (1 city), **Duo** (2 cities), and **Compact List** (3 cities) right from the widget configuration intent.
-- **In-app default roster management.** The host app includes live previews for all sizes (2×2, 4×2, and 4×4) and allows managing default roster cities with live search across all time zones.
+- **Names that fit together.** When a city name is too long for its slot, every name in that widget steps down to the same smaller size rather than each column shrinking on its own; past that, names truncate.
+- **Live previews in the host app.** The app shows all sizes (2×2, 4×2, and 4×4) with each size's default cities. Choosing cities happens per widget, in **Edit Widget**.
 - **One design system, two targets.** The widget and the host app share the same SwiftUI views (`FocusClockView`, `DuoClockView`, `CompactListClockView`, `TrioClockView`, `GridClockView`) and glass background.
 - **Home city badge.** A subtle location marker marks the city matching your current local time zone.
 - **Resilient window placement.** If macOS restores the host window from a display that is no longer attached, the app centers it on the main screen instead of opening off-screen.
@@ -120,20 +124,19 @@ Empty slots fall back to a curated default set (or the user's custom default ros
 
 ```
 MaxgusWorldClock.xcodeproj
-MaxgusWorldClock/          Host app: onboarding, roster manager, live widget previews
+MaxgusWorldClock/          Host app: onboarding and live widget previews
 WorldClockWidget/          WidgetKit extension and configuration intent
 Shared/
-  CityEntity.swift         AppEntity, SmallWidgetStyle, and entity query
-  CityCatalog.swift        City catalog, defaults, IANA search, fallback resolution, RosterStore
+  CityEntity.swift         City model and SmallWidgetStyle
+  CityCatalog.swift        City catalog, per-size defaults, fallback resolution
   CityTime.swift           Time, date, offset, home badge, and day-relation logic
   WidgetViews.swift        Glass tile, home badge, and all five widget layouts
 Scripts/
-  build-dmg.sh             Xcode-free universal build + DMG packaging + notarization support
-  run-tests.sh             Command-line test runner for unit test suite
-  generate-appintents-metadata.sh  AppIntents metadata generator
+  build-dmg.sh             xcodebuild universal build + DMG packaging + notarization support
+  run-tests.sh             Runs the WorldClockTests target with xcodebuild
   INSTALL.txt              Text installed as Read Me.txt in the DMG
 Tests/
-  WorldClockTests.swift    Unit tests for catalog search, offsets, day boundaries, deduplication
+  WorldClockTests.swift    WorldClockTests target: catalog, offsets, day boundaries, deduplication
 design/                    Design study (HTML) and rendered previews
 dist/                      Built app, DMG, and checksum (generated)
 ```
@@ -146,4 +149,4 @@ Run the test suite:
 ./Scripts/run-tests.sh
 ```
 
-Both targets type-check against the installed macOS SDK with a macOS 14 deployment target. The packaged extension is registered with the system: `pluginkit` lists `com.maxgus.worldclock.widget`, and `chronod` discovers the extension when the app launches.
+The tests compile the shared model code directly (no host app), so running them never launches or registers the widget. After installing, `pluginkit -m -v | grep maxgus` should list `com.maxgus.worldclock.widget` from `/Applications`.
