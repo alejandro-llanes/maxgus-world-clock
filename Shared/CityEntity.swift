@@ -1,12 +1,8 @@
-import AppIntents
 import Foundation
 
 /// A city the user can place on a clock. `id` is a stable slug (not the time zone),
 /// so cities that share a time zone — Miami and New York, for example — stay distinct.
-struct CityEntity: AppEntity, Identifiable, Hashable {
-    static var typeDisplayRepresentation = TypeDisplayRepresentation(name: "City")
-    static var defaultQuery = CityQuery()
-
+struct CityEntity: Identifiable, Hashable {
     let id: String
     let name: String
     let timeZoneIdentifier: String
@@ -15,20 +11,33 @@ struct CityEntity: AppEntity, Identifiable, Hashable {
         TimeZone(identifier: timeZoneIdentifier) ?? TimeZone.autoupdatingCurrent
     }
 
-    var displayRepresentation: DisplayRepresentation {
-        DisplayRepresentation(
-            title: "\(name)",
-            subtitle: "\(timeZoneIdentifier.replacingOccurrences(of: "_", with: " "))"
-        )
+    /// Picker grouping, taken from the time zone's top-level area.
+    var region: String {
+        switch timeZoneIdentifier.prefix(while: { $0 != "/" }) {
+        case "America": return "Americas"
+        case "Europe", "Atlantic": return "Europe"
+        case "Africa": return "Africa"
+        default: return "Asia & Pacific"
+        }
     }
 }
 
-enum SmallWidgetStyle: String, AppEnum, CaseIterable, Identifiable {
+/// The 2×2 layouts. Edit Widget stores the raw value as a plain string; see
+/// `CityOptionsProvider` in the widget for why these aren't an AppEnum.
+enum SmallWidgetStyle: String, CaseIterable, Identifiable {
     case focus
     case duo
     case list
 
     var id: String { rawValue }
+
+    /// Matches a style saved by Edit Widget: its title, or the raw value earlier builds stored.
+    init?(setting: String) {
+        guard let style = Self.allCases.first(where: { $0.title == setting || $0.rawValue == setting }) else {
+            return nil
+        }
+        self = style
+    }
 
     var title: String {
         switch self {
@@ -38,21 +47,13 @@ enum SmallWidgetStyle: String, AppEnum, CaseIterable, Identifiable {
         }
     }
 
-    static var typeDisplayRepresentation = TypeDisplayRepresentation(name: "Small Widget Style")
-    static var caseDisplayRepresentations: [SmallWidgetStyle: DisplayRepresentation] = [
-        .focus: DisplayRepresentation(
-            title: "Focus",
-            subtitle: "One city with large numerals"
-        ),
-        .duo: DisplayRepresentation(
-            title: "Duo",
-            subtitle: "Two cities stacked"
-        ),
-        .list: DisplayRepresentation(
-            title: "Compact List",
-            subtitle: "Three cities in a compact list"
-        )
-    ]
+    var subtitle: String {
+        switch self {
+        case .focus: return "One city with large numerals"
+        case .duo: return "Two cities stacked"
+        case .list: return "Three cities in a compact list"
+        }
+    }
 
     var cityLimit: Int {
         switch self {
@@ -61,22 +62,12 @@ enum SmallWidgetStyle: String, AppEnum, CaseIterable, Identifiable {
         case .list: return 3
         }
     }
-}
 
-struct CityQuery: EntityStringQuery {
-    func entities(for identifiers: [CityEntity.ID]) async throws -> [CityEntity] {
-        identifiers.compactMap { CityCatalog.city(id: $0) }
-    }
-
-    func entities(matching string: String) async throws -> [CityEntity] {
-        CityCatalog.search(matching: string)
-    }
-
-    func suggestedEntities() async throws -> [CityEntity] {
-        CityCatalog.suggestions
-    }
-
-    func defaultResult() async -> CityEntity? {
-        RosterStore.shared.cities.first ?? CityCatalog.lisbon
+    var defaultCities: [CityEntity] {
+        switch self {
+        case .focus: return CityCatalog.focusDefaults
+        case .duo: return CityCatalog.duoDefaults
+        case .list: return CityCatalog.listDefaults
+        }
     }
 }
