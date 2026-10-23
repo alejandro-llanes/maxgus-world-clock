@@ -1,4 +1,4 @@
-Maxgus World Clock 1.0
+Maxgus World Clock 1.1
 ======================
 
 A world clock for your macOS desktop. Requires macOS 14 or later.
@@ -14,9 +14,9 @@ Install
 5. Right-click the placed widget and choose "Edit Widget" to pick cities.
 
 Widget sizes:
-  2x2  Focus  — the main city
-  4x2  Trio   — up to three cities
-  4x4  Grid   — up to four cities
+  2x2  Focus, Duo, or Compact List — one to three cities
+  4x2  Trio  — up to three cities
+  4x4  Grid  — up to four cities
 
 
 If macOS blocks the app
