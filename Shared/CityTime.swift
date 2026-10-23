@@ -127,12 +127,36 @@ enum TimeFormatting {
         return (parts.year ?? 0) * 10_000 + (parts.month ?? 0) * 100 + (parts.day ?? 0)
     }
 
+    private static let formatters = FormatterCache()
+
     private static func formatter(_ format: String, timeZone: TimeZone) -> DateFormatter {
+        formatters.formatter(format, timeZone: timeZone)
+    }
+}
+
+/// DateFormatter is expensive to create and every tile asks for several per city,
+/// so formatters are reused per format and time zone. Formatting itself is thread-safe.
+private final class FormatterCache: @unchecked Sendable {
+    private let lock = NSLock()
+    private var cache: [String: DateFormatter] = [:]
+
+    func formatter(_ format: String, timeZone: TimeZone) -> DateFormatter {
+        let key = "\(timeZone.identifier)|\(format)"
+        lock.lock()
+        defer { lock.unlock() }
+
+        if let cached = cache[key] {
+            return cached
+        }
+
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.calendar = Calendar(identifier: .gregorian)
-        formatter.timeZone = timeZone
+        // Pin the zone: an autoupdating zone would drift away from its cache key
+        // if the Mac's time zone changes.
+        formatter.timeZone = TimeZone(identifier: timeZone.identifier) ?? timeZone
         formatter.dateFormat = format
+        cache[key] = formatter
         return formatter
     }
 }
