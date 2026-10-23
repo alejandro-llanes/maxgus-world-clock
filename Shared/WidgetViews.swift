@@ -74,7 +74,9 @@ struct ClockTimeText: View {
     let size: CGFloat
 
     var body: some View {
-        HStack(alignment: .top, spacing: 0) {
+        // Baseline-aligned so the numerals, not the AM/PM marker, define this view's
+        // baseline when it sits beside a city name. The marker is raised to cap height.
+        HStack(alignment: .firstTextBaseline, spacing: 0) {
             Text(clock.time)
                 .font(.system(size: size, weight: .light))
                 .tracking(-size * 0.048)
@@ -85,7 +87,7 @@ struct ClockTimeText: View {
                     .font(.system(size: size * 0.30, weight: .semibold))
                     .foregroundStyle(ClockTheme.ink2)
                     .padding(.leading, size * 0.09)
-                    .padding(.top, size * 0.07)
+                    .alignmentGuide(.firstTextBaseline) { $0[.firstTextBaseline] + size * 0.5 }
             }
         }
         .foregroundStyle(ClockTheme.ink)
@@ -144,40 +146,95 @@ struct FocusClockView: View {
     }
 }
 
+/// Picks one city-name size for a whole multi-city layout. It steps the size down until
+/// the longest name fits its slot, so neighbouring names shrink together instead of each
+/// slot scaling on its own. Past the smallest step, names truncate.
+private struct UniformNameSize<Content: View>: View {
+    let base: CGFloat
+    @ViewBuilder let content: (CGFloat) -> Content
+
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            ForEach([1.0, 0.92, 0.85, 0.78], id: \.self) { scale in
+                content(base * scale)
+            }
+        }
+    }
+}
+
+/// A city name that asks for as much room as the widest name in its layout, so every
+/// slot needs the same width when `UniformNameSize` tests a size.
+private struct CityNameText: View {
+    let name: String
+    let allNames: [String]
+    let size: CGFloat
+    let weight: Font.Weight
+    let tracking: CGFloat
+
+    var body: some View {
+        ZStack(alignment: .leading) {
+            ForEach(Array(allNames.enumerated()), id: \.offset) { _, other in
+                Text(other)
+                    .hidden()
+                    .accessibilityHidden(true)
+            }
+
+            Text(name)
+        }
+        .font(.system(size: size, weight: weight))
+        .tracking(tracking)
+        .lineLimit(1)
+    }
+}
+
+private extension View {
+    /// Keeps a row out of `UniformNameSize`'s fit test; it still fills the width it's given.
+    func ignoredWhenFittingNames() -> some View {
+        frame(idealWidth: 0, maxWidth: .infinity, alignment: .leading)
+    }
+}
+
 /// Alternate 2×2 small widget layout: two stacked cities (Study B).
 struct DuoClockView: View {
     let clocks: [CityTime]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            ForEach(Array(clocks.prefix(2).enumerated()), id: \.element.id) { index, clock in
-                if index > 0 {
-                    Rectangle()
-                        .fill(ClockTheme.hairline)
-                        .frame(height: 0.5)
-                        .padding(.vertical, 8)
-                }
+        let shown = Array(clocks.prefix(2))
+        UniformNameSize(base: 12.5) { nameSize in
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach(Array(shown.enumerated()), id: \.element.id) { index, clock in
+                    if index > 0 {
+                        Rectangle()
+                            .fill(ClockTheme.hairline)
+                            .frame(height: 0.5)
+                            .padding(.vertical, 8)
+                    }
 
-                DuoRow(clock: clock)
+                    DuoRow(clock: clock, allNames: shown.map(\.city.name), nameSize: nameSize)
+                }
             }
+            .padding(.horizontal, 15)
+            .padding(.vertical, 13)
         }
-        .padding(.horizontal, 15)
-        .padding(.vertical, 13)
         .foregroundStyle(ClockTheme.ink)
     }
 }
 
 private struct DuoRow: View {
     let clock: CityTime
+    let allNames: [String]
+    let nameSize: CGFloat
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(alignment: .firstTextBaseline, spacing: 4) {
-                Text(clock.city.name)
-                    .font(.system(size: 12.5, weight: .semibold))
-                    .tracking(-0.15)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
+                CityNameText(
+                    name: clock.city.name,
+                    allNames: allNames,
+                    size: nameSize,
+                    weight: .semibold,
+                    tracking: -0.15
+                )
 
                 if clock.isHome {
                     HomeBadge()
@@ -203,6 +260,7 @@ private struct DuoRow: View {
                 .lineLimit(1)
                 .fixedSize()
             }
+            .ignoredWhenFittingNames()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
     }
@@ -214,53 +272,61 @@ struct CompactListClockView: View {
     let date: Date
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack(alignment: .firstTextBaseline, spacing: 4) {
-                Text("World Clock")
-                    .font(.system(size: 8.5, weight: .semibold))
-                    .tracking(1.1)
-                    .foregroundStyle(ClockTheme.ink3)
-
-                Spacer(minLength: 4)
-
-                Text(TimeFormatting.localDateLine(at: date))
-                    .font(.system(size: 8.5, weight: .regular))
-                    .tracking(0.5)
-                    .foregroundStyle(ClockTheme.ink3)
-                    .lineLimit(1)
-            }
-            .textCase(.uppercase)
-            .padding(.bottom, 6)
-
-            ForEach(Array(clocks.prefix(3).enumerated()), id: \.element.id) { index, clock in
-                if index > 0 {
-                    Rectangle()
-                        .fill(ClockTheme.hairline)
-                        .frame(height: 0.5)
-                }
-
-                HStack(alignment: .firstTextBaseline, spacing: 6) {
-                    HStack(alignment: .firstTextBaseline, spacing: 3) {
-                        Text(clock.city.name)
-                            .font(.system(size: 12, weight: .medium))
-                            .tracking(-0.15)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.78)
-
-                        if clock.isHome {
-                            HomeBadge()
-                        }
-                    }
+        let shown = Array(clocks.prefix(3))
+        UniformNameSize(base: 12) { nameSize in
+            VStack(alignment: .leading, spacing: 0) {
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                    Text("World Clock")
+                        .font(.system(size: 7.5, weight: .semibold))
+                        .tracking(0.6)
+                        .foregroundStyle(ClockTheme.ink3)
+                        .fixedSize()
 
                     Spacer(minLength: 4)
 
-                    ClockTimeText(clock: clock, size: 16)
+                    Text(TimeFormatting.localDateLine(at: date))
+                        .font(.system(size: 7.5, weight: .regular))
+                        .tracking(0.2)
+                        .foregroundStyle(ClockTheme.ink3)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.85)
                 }
-                .frame(maxHeight: .infinity)
+                .textCase(.uppercase)
+                .padding(.bottom, 6)
+                .ignoredWhenFittingNames()
+
+                ForEach(Array(shown.enumerated()), id: \.element.id) { index, clock in
+                    if index > 0 {
+                        Rectangle()
+                            .fill(ClockTheme.hairline)
+                            .frame(height: 0.5)
+                    }
+
+                    HStack(alignment: .firstTextBaseline, spacing: 6) {
+                        HStack(alignment: .firstTextBaseline, spacing: 3) {
+                            CityNameText(
+                                name: clock.city.name,
+                                allNames: shown.map(\.city.name),
+                                size: nameSize,
+                                weight: .medium,
+                                tracking: -0.15
+                            )
+
+                            if clock.isHome {
+                                HomeBadge()
+                            }
+                        }
+
+                        Spacer(minLength: 4)
+
+                        ClockTimeText(clock: clock, size: 16)
+                    }
+                    .frame(maxHeight: .infinity)
+                }
             }
+            .padding(.horizontal, 15)
+            .padding(.vertical, 13)
         }
-        .padding(.horizontal, 15)
-        .padding(.vertical, 13)
         .foregroundStyle(ClockTheme.ink)
     }
 }
@@ -269,36 +335,44 @@ struct TrioClockView: View {
     let clocks: [CityTime]
 
     var body: some View {
-        HStack(spacing: 0) {
-            ForEach(Array(clocks.enumerated()), id: \.element.id) { index, clock in
-                if index > 0 {
-                    Rectangle()
-                        .fill(ClockTheme.hairline)
-                        .frame(width: 0.5)
-                        .padding(.vertical, 2)
-                }
+        UniformNameSize(base: 13) { nameSize in
+            HStack(spacing: 0) {
+                ForEach(Array(clocks.enumerated()), id: \.element.id) { index, clock in
+                    if index > 0 {
+                        Rectangle()
+                            .fill(ClockTheme.hairline)
+                            .frame(width: 0.5)
+                            .padding(.vertical, 2)
+                    }
 
-                TrioColumn(clock: clock)
-                    .padding(.leading, index == 0 ? 0 : 12)
-                    .padding(.trailing, index == clocks.count - 1 ? 0 : 12)
+                    // Same padding on every column so all three get equal room; the
+                    // outer 12 pt plus the 4 pt below line up with the 16 pt edge inset.
+                    TrioColumn(clock: clock, allNames: clocks.map(\.city.name), nameSize: nameSize)
+                        .padding(.horizontal, 12)
+                }
             }
+            .padding(.horizontal, 4)
+            .padding(.vertical, 16)
         }
-        .padding(16)
     }
 }
 
 private struct TrioColumn: View {
     let clock: CityTime
+    let allNames: [String]
+    let nameSize: CGFloat
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .firstTextBaseline, spacing: 4) {
                 HStack(alignment: .firstTextBaseline, spacing: 3) {
-                    Text(clock.city.name)
-                        .font(.system(size: 13, weight: .semibold))
-                        .tracking(-0.1)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.78)
+                    CityNameText(
+                        name: clock.city.name,
+                        allNames: allNames,
+                        size: nameSize,
+                        weight: .semibold,
+                        tracking: -0.1
+                    )
 
                     if clock.isHome {
                         HomeBadge()
@@ -313,6 +387,7 @@ private struct TrioColumn: View {
             Spacer(minLength: 2)
 
             ClockTimeText(clock: clock, size: 27)
+                .ignoredWhenFittingNames()
 
             Spacer(minLength: 2)
 
@@ -329,6 +404,7 @@ private struct TrioColumn: View {
             }
             .font(.system(size: 9.5, weight: .regular))
             .foregroundStyle(ClockTheme.ink2)
+            .ignoredWhenFittingNames()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .foregroundStyle(ClockTheme.ink)
@@ -340,54 +416,57 @@ struct GridClockView: View {
     let date: Date
 
     var body: some View {
-        VStack(spacing: 0) {
-            HStack(alignment: .firstTextBaseline, spacing: 8) {
-                Text("World Clock")
-                    .font(.system(size: 10, weight: .semibold))
-                    .tracking(1.55)
-                    .foregroundStyle(ClockTheme.ink2)
-
-                Spacer(minLength: 8)
-
-                Text(TimeFormatting.localDateLine(at: date))
-                    .font(.system(size: 10, weight: .regular))
-                    .tracking(0.9)
-                    .foregroundStyle(ClockTheme.ink3)
-            }
-            .textCase(.uppercase)
-            .padding(.bottom, 14)
-
-            Rectangle()
-                .fill(ClockTheme.hairline)
-                .frame(height: 0.5)
-
+        UniformNameSize(base: 15) { nameSize in
             VStack(spacing: 0) {
-                HStack(spacing: 0) {
-                    gridCell(at: 0)
-                    verticalRule
-                    gridCell(at: 1)
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                    Text("World Clock")
+                        .font(.system(size: 10, weight: .semibold))
+                        .tracking(1.55)
+                        .foregroundStyle(ClockTheme.ink2)
+
+                    Spacer(minLength: 8)
+
+                    Text(TimeFormatting.localDateLine(at: date))
+                        .font(.system(size: 10, weight: .regular))
+                        .tracking(0.9)
+                        .foregroundStyle(ClockTheme.ink3)
                 }
-                .frame(maxHeight: .infinity)
+                .textCase(.uppercase)
+                .padding(.bottom, 14)
+                .ignoredWhenFittingNames()
 
                 Rectangle()
                     .fill(ClockTheme.hairline)
                     .frame(height: 0.5)
 
-                HStack(spacing: 0) {
-                    gridCell(at: 2)
-                    verticalRule
-                    gridCell(at: 3)
+                VStack(spacing: 0) {
+                    HStack(spacing: 0) {
+                        gridCell(at: 0, nameSize: nameSize)
+                        verticalRule
+                        gridCell(at: 1, nameSize: nameSize)
+                    }
+                    .frame(maxHeight: .infinity)
+
+                    Rectangle()
+                        .fill(ClockTheme.hairline)
+                        .frame(height: 0.5)
+
+                    HStack(spacing: 0) {
+                        gridCell(at: 2, nameSize: nameSize)
+                        verticalRule
+                        gridCell(at: 3, nameSize: nameSize)
+                    }
+                    .frame(maxHeight: .infinity)
                 }
-                .frame(maxHeight: .infinity)
             }
+            .padding(22)
         }
-        .padding(22)
     }
 
-    private func gridCell(at index: Int) -> some View {
+    private func gridCell(at index: Int, nameSize: CGFloat) -> some View {
         Group {
             if clocks.indices.contains(index) {
-                GridCell(clock: clocks[index])
+                GridCell(clock: clocks[index], allNames: clocks.map(\.city.name), nameSize: nameSize)
             } else {
                 Color.clear
             }
@@ -408,16 +487,20 @@ struct GridClockView: View {
 
 private struct GridCell: View {
     let clock: CityTime
+    let allNames: [String]
+    let nameSize: CGFloat
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .firstTextBaseline, spacing: 6) {
                 HStack(alignment: .firstTextBaseline, spacing: 4) {
-                    Text(clock.city.name)
-                        .font(.system(size: 15, weight: .semibold))
-                        .tracking(-0.2)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.8)
+                    CityNameText(
+                        name: clock.city.name,
+                        allNames: allNames,
+                        size: nameSize,
+                        weight: .semibold,
+                        tracking: -0.2
+                    )
 
                     if clock.isHome {
                         HomeBadge()
@@ -432,6 +515,7 @@ private struct GridCell: View {
             Spacer(minLength: 2)
 
             ClockTimeText(clock: clock, size: 38)
+                .ignoredWhenFittingNames()
 
             Spacer(minLength: 2)
 
@@ -448,6 +532,7 @@ private struct GridCell: View {
             }
             .font(.system(size: 10, weight: .regular))
             .foregroundStyle(ClockTheme.ink2)
+            .ignoredWhenFittingNames()
         }
         .foregroundStyle(ClockTheme.ink)
     }
@@ -472,10 +557,11 @@ struct ClockPreviewSurface<Content: View>: View {
         self.content = content()
     }
 
-    /// Continuous corners at 13% of tile width; 7.5% on 4×4 large tiles.
+    /// Continuous corners at 13% of the tile's short side; 7.5% on 4×4 large tiles.
     private var cornerRadius: CGFloat {
-        let ratio: CGFloat = (width >= 300 && height >= 300) ? 0.075 : 0.13
-        return width * ratio
+        let side = min(width, height)
+        let ratio: CGFloat = side >= 300 ? 0.075 : 0.13
+        return side * ratio
     }
 
     var body: some View {
