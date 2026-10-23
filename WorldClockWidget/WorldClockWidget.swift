@@ -8,39 +8,107 @@ struct WorldClockConfigurationIntent: WidgetConfigurationIntent {
     static var title: LocalizedStringResource = "World Clock"
     static var description = IntentDescription("Choose the cities shown on your clock.")
 
-    @Parameter(
-        title: "Small widget style",
-        description: "Layout for the 2×2 small widget.",
-        default: .focus
-    )
-    var smallStyle: SmallWidgetStyle
+    // Optional because a String default plus an options provider needs macOS 26;
+    // unset means Focus (see `style`, and the provider's default).
+    @Parameter(title: "Small widget style", optionsProvider: SmallStyleOptionsProvider())
+    var smallStyle: String?
+
+    // Renamed from firstCity…fourthCity when cities stopped being an AppEntity, so values
+    // saved by the old entity parameters are ignored instead of decoded as the wrong type.
 
     @Parameter(
         title: "Main city",
-        description: "The city shown by every widget size."
+        description: "Leave empty to use this size's default.",
+        optionsProvider: CityOptionsProvider()
     )
-    var firstCity: CityEntity?
+    var city1: String?
 
     @Parameter(
         title: "Second city",
-        description: "Adds a city to Duo, Compact List, medium, and large widgets."
+        description: "Leave empty to use this size's default.",
+        optionsProvider: CityOptionsProvider()
     )
-    var secondCity: CityEntity?
+    var city2: String?
 
     @Parameter(
         title: "Third city",
-        description: "Adds a city to Compact List, medium, and large widgets."
+        description: "Leave empty to use this size's default.",
+        optionsProvider: CityOptionsProvider()
     )
-    var thirdCity: CityEntity?
+    var city3: String?
 
     @Parameter(
         title: "Fourth city",
-        description: "Adds a city to the large widget."
+        description: "Leave empty to use this size's default.",
+        optionsProvider: CityOptionsProvider()
     )
-    var fourthCity: CityEntity?
+    var city4: String?
 
-    init() {
-        self.smallStyle = RosterStore.shared.smallWidgetStyle
+    /// Edit Widget lists only the settings the placed size and style actually use.
+    static var parameterSummary: some ParameterSummary {
+        Switch(.widgetFamily) {
+            Case(.systemSmall) {
+                Switch(\.$smallStyle) {
+                    Case(["Duo", "duo"]) {
+                        Summary { \.$smallStyle; \.$city1; \.$city2 }
+                    }
+                    Case(["Compact List", "list"]) {
+                        Summary { \.$smallStyle; \.$city1; \.$city2; \.$city3 }
+                    }
+                    DefaultCase {
+                        Summary { \.$smallStyle; \.$city1 }
+                    }
+                }
+            }
+            Case(.systemMedium) {
+                Summary { \.$city1; \.$city2; \.$city3 }
+            }
+            DefaultCase {
+                Summary { \.$city1; \.$city2; \.$city3; \.$city4 }
+            }
+        }
+    }
+}
+
+/// Edit Widget's city picker. Settings are plain strings (city names here) rather than an
+/// AppEntity or AppEnum: macOS decodes custom App Intents types through linkd, which
+/// rejects bundles without a Team ID, so in an ad-hoc build those values always arrive
+/// empty. Strings are a built-in type and decode inside the widget. Storing the name
+/// rather than an ID keeps the picker readable even when it shows the raw value.
+struct CityOptionsProvider: DynamicOptionsProvider {
+    func results() async throws -> IntentItemCollection<String> {
+        IntentItemCollection(
+            promptLabel: "Search cities",
+            sections: CityCatalog.regions.map { region in
+                IntentItemSection("\(region.name)", items: region.cities.map { city in
+                    IntentItem(
+                        city.name,
+                        title: "\(city.name)",
+                        subtitle: "\(city.timeZoneIdentifier.replacingOccurrences(of: "_", with: " "))"
+                    )
+                })
+            }
+        )
+    }
+}
+
+struct SmallStyleOptionsProvider: DynamicOptionsProvider {
+    func results() async throws -> IntentItemCollection<String> {
+        IntentItemCollection(sections: [
+            IntentItemSection(items: SmallWidgetStyle.allCases.map { style in
+                IntentItem(style.title, title: "\(style.title)", subtitle: "\(style.subtitle)")
+            })
+        ])
+    }
+
+    func defaultResult() async -> String? {
+        SmallWidgetStyle.focus.title
+    }
+}
+
+extension WorldClockConfigurationIntent {
+    var style: SmallWidgetStyle {
+        smallStyle.flatMap(SmallWidgetStyle.init(setting:)) ?? .focus
     }
 }
 
@@ -54,11 +122,10 @@ struct WorldClockEntry: TimelineEntry {
 
 struct WorldClockProvider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> WorldClockEntry {
-        let style = RosterStore.shared.smallWidgetStyle
-        return WorldClockEntry(
+        WorldClockEntry(
             date: .now,
-            cities: RosterStore.shared.fallbacks(forSmallStyle: style),
-            smallStyle: style
+            cities: Self.layout(for: context.family, smallStyle: .focus).defaults,
+            smallStyle: .focus
         )
     }
 
@@ -69,7 +136,7 @@ struct WorldClockProvider: AppIntentTimelineProvider {
         WorldClockEntry(
             date: .now,
             cities: resolvedCities(for: configuration, in: context.family),
-            smallStyle: configuration.smallStyle
+            smallStyle: configuration.style
         )
     }
 
@@ -78,7 +145,7 @@ struct WorldClockProvider: AppIntentTimelineProvider {
         in context: Context
     ) async -> Timeline<WorldClockEntry> {
         let cities = resolvedCities(for: configuration, in: context.family)
-        let smallStyle = configuration.smallStyle
+        let smallStyle = configuration.style
 
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = .autoupdatingCurrent
@@ -102,33 +169,34 @@ struct WorldClockProvider: AppIntentTimelineProvider {
         for configuration: WorldClockConfigurationIntent,
         in family: WidgetFamily
     ) -> [CityEntity] {
-        let limit: Int
-        let fallbacks: [CityEntity]
-
-        switch family {
-        case .systemSmall:
-            limit = configuration.smallStyle.cityLimit
-            fallbacks = RosterStore.shared.fallbacks(forSmallStyle: configuration.smallStyle)
-        case .systemMedium:
-            limit = 3
-            fallbacks = RosterStore.shared.trioFallbacks()
-        default:
-            limit = 4
-            fallbacks = RosterStore.shared.gridFallbacks()
-        }
-
+        let layout = Self.layout(for: family, smallStyle: configuration.style)
         let configured = [
-            configuration.firstCity,
-            configuration.secondCity,
-            configuration.thirdCity,
-            configuration.fourthCity
-        ]
+            configuration.city1,
+            configuration.city2,
+            configuration.city3,
+            configuration.city4
+        ].map { $0.flatMap(CityCatalog.city(setting:)) }
 
         return CityCatalog.resolvedCities(
             configured: configured,
-            fallbacks: fallbacks,
-            limit: limit
+            fallbacks: layout.defaults,
+            limit: layout.limit
         )
+    }
+
+    /// How many cities a family shows, and which ones fill slots the user left empty.
+    private static func layout(
+        for family: WidgetFamily,
+        smallStyle: SmallWidgetStyle
+    ) -> (limit: Int, defaults: [CityEntity]) {
+        switch family {
+        case .systemSmall:
+            return (smallStyle.cityLimit, smallStyle.defaultCities)
+        case .systemMedium:
+            return (3, CityCatalog.trioDefaults)
+        default:
+            return (4, CityCatalog.gridDefaults)
+        }
     }
 }
 

@@ -17,54 +17,31 @@ final class WorldClockTests: XCTestCase {
         XCTAssertEqual(tokyo?.timeZoneIdentifier, "Asia/Tokyo")
     }
 
-    func testIANATimeZoneLookup() {
-        let bogota = CityCatalog.city(id: "tz:America/Bogota")
-        XCTAssertNotNil(bogota)
-        XCTAssertEqual(bogota?.name, "Bogota")
-        XCTAssertEqual(bogota?.timeZoneIdentifier, "America/Bogota")
-
-        let warsaw = CityCatalog.city(id: "Europe/Warsaw")
-        XCTAssertNotNil(warsaw)
-        XCTAssertEqual(warsaw?.name, "Warsaw")
-        XCTAssertEqual(warsaw?.timeZoneIdentifier, "Europe/Warsaw")
-
-        let invalid = CityCatalog.city(id: "NonExistent/Place")
-        XCTAssertNil(invalid)
+    func testCatalogIDsAreUniqueAndResolve() {
+        // Edit Widget stores these IDs as plain strings, so each must map back to one city.
+        let ids = CityCatalog.all.map(\.id)
+        XCTAssertEqual(Set(ids).count, ids.count)
+        for id in ids {
+            XCTAssertEqual(CityCatalog.city(id: id)?.id, id)
+        }
+        XCTAssertNil(CityCatalog.city(id: "not-a-city"))
     }
 
-    func testFriendlyCityNameFormatting() {
-        XCTAssertEqual(
-            CityCatalog.friendlyCityName(for: "America/Argentina/Buenos_Aires"),
-            "Buenos Aires"
-        )
-        XCTAssertEqual(
-            CityCatalog.friendlyCityName(for: "America/New_York"),
-            "New York"
-        )
-        XCTAssertEqual(
-            CityCatalog.friendlyCityName(for: "Asia/Ho_Chi_Minh"),
-            "Ho Chi Minh"
-        )
+    func testCitySettingsResolveByNameOrLegacyID() {
+        // Edit Widget stores names; builds before that stored IDs.
+        XCTAssertEqual(CityCatalog.city(setting: "Buenos Aires")?.id, "buenos-aires")
+        XCTAssertEqual(CityCatalog.city(setting: "Bogotá")?.id, "bogota")
+        XCTAssertEqual(CityCatalog.city(setting: "buenos-aires")?.id, "buenos-aires")
+        XCTAssertNil(CityCatalog.city(setting: "Atlantis"))
+
+        let names = CityCatalog.all.map(\.name)
+        XCTAssertEqual(Set(names).count, names.count, "names must be unique to be used as settings")
     }
 
-    func testCitySearch() {
-        // Empty query returns default suggestions
-        let suggestions = CityCatalog.search(matching: "")
-        XCTAssertEqual(suggestions.count, CityCatalog.suggestions.count)
-
-        // Case and diacritic insensitive search on catalog
-        let zurich = CityCatalog.search(matching: "zurich")
-        XCTAssertTrue(zurich.contains { $0.name == "Zürich" })
-
-        let saoPaulo = CityCatalog.search(matching: "sao paulo")
-        XCTAssertTrue(saoPaulo.contains { $0.name == "São Paulo" })
-
-        // Searching non-catalog IANA time zone
-        let bogotaResults = CityCatalog.search(matching: "bogota")
-        XCTAssertTrue(bogotaResults.contains { $0.timeZoneIdentifier == "America/Bogota" })
-
-        let reykjavikResults = CityCatalog.search(matching: "reykjavik")
-        XCTAssertTrue(reykjavikResults.contains { $0.name == "Reykjavík" })
+    func testRegionsCoverTheCatalogOnce() {
+        let grouped = CityCatalog.regions.flatMap(\.cities).map(\.id)
+        XCTAssertEqual(grouped.sorted(), CityCatalog.all.map(\.id).sorted())
+        XCTAssertEqual(CityCatalog.regions.map(\.name), ["Africa", "Americas", "Asia & Pacific", "Europe"])
     }
 
     // MARK: - Deduplication & Backfilling Tests
@@ -72,7 +49,7 @@ final class WorldClockTests: XCTestCase {
     func testResolvedCitiesDeduplicationDoesNotDropSlots() {
         let fallbacks = [CityCatalog.newYork, CityCatalog.tokyo, CityCatalog.sydney]
 
-        // User sets firstCity = Tokyo, leaving second and third slots default.
+        // User sets the first slot to Tokyo, leaving second and third slots default.
         // Fallback[1] is also Tokyo! It must NOT drop the column down to 2 cities.
         let resolved = CityCatalog.resolvedCities(
             configured: [CityCatalog.tokyo, nil, nil],
@@ -269,5 +246,33 @@ final class WorldClockTests: XCTestCase {
         XCTAssertEqual(SmallWidgetStyle.focus.cityLimit, 1)
         XCTAssertEqual(SmallWidgetStyle.duo.cityLimit, 2)
         XCTAssertEqual(SmallWidgetStyle.list.cityLimit, 3)
+    }
+
+    func testSmallStyleSettingsResolveByTitleOrLegacyRawValue() {
+        XCTAssertEqual(SmallWidgetStyle(setting: "Compact List"), .list)
+        XCTAssertEqual(SmallWidgetStyle(setting: "duo"), .duo)
+        XCTAssertNil(SmallWidgetStyle(setting: "Grid"))
+    }
+
+    func testSmallWidgetStyleDefaultsFillEverySlot() {
+        for style in SmallWidgetStyle.allCases {
+            XCTAssertEqual(style.defaultCities.count, style.cityLimit, "\(style) defaults")
+            XCTAssertEqual(Set(style.defaultCities.map(\.id)).count, style.cityLimit, "\(style) defaults are distinct")
+        }
+    }
+
+    // MARK: - Formatter cache
+
+    func testCachedFormattersKeepTimeZonesApart() {
+        let date = Date(timeIntervalSince1970: 1_792_590_000) // 2026-10-21 13:40 UTC
+
+        // Same format string, different zones: a shared cache must not mix them up.
+        let london = TimeFormatting.clock(for: CityCatalog.london, at: date, use24Hour: true)
+        let tokyo = TimeFormatting.clock(for: CityCatalog.tokyo, at: date, use24Hour: true)
+        let londonAgain = TimeFormatting.clock(for: CityCatalog.london, at: date, use24Hour: true)
+
+        XCTAssertEqual(london.time, "14:40")
+        XCTAssertEqual(tokyo.time, "22:40")
+        XCTAssertEqual(londonAgain.time, london.time)
     }
 }
